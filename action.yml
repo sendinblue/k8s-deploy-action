@@ -29,7 +29,7 @@ runs:
   steps:
     - name: Configure image, secrets, and deploy image
       env:
-        IMAGES: ${{ inputs.image }} ${{ input.images }}
+        IMAGES: ${{ inputs.image }} ${{ inputs.images }}
         SECRETS_NAME: ${{ inputs.secrets-name }}
         SECRETS: ${{ inputs.secrets }}
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
