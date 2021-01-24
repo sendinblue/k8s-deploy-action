@@ -11,9 +11,9 @@ This action performs generation of Kubernetes (K8s) resources from
 
 **Required** Location of the Kubernetes deployment resources.
 
-### `image`
+### `images`
 
-**Required** The image to deploy, e.g. `foo/example-app:latest`.
+Images to deploy, e.g. `foo/example-app:latest` (see [other formats](https://github.com/kubernetes-sigs/kustomize/blob/master/examples/image.md)).
 
 ### `secrets-name`
 

@@ -5,8 +5,11 @@ inputs:
     description: 'Location of the Kubernetes deployment resources'
     required: true
   image:
-    description: 'Image to deploy'
-    required: true
+    description: '(Deprecated) Image to deploy'
+    required: false
+  images:
+    description: 'Images to deploy'
+    required: false
   secrets-name:
     description: 'Name of the Secret resource'
     default: 'secrets'
@@ -26,16 +29,16 @@ runs:
   steps:
     - name: Configure image, secrets, and deploy image
       env:
-        IMAGE: ${{ inputs.image }}
+        IMAGES: ${{ inputs.image }} ${{ input.images }}
         SECRETS_NAME: ${{ inputs.secrets-name }}
         SECRETS: ${{ inputs.secrets }}
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
         DRY_RUN: ${{ inputs.dry-run }}
       working-directory: ${{ inputs.resource-directory }}
       run: |
-        if [[ -n "$IMAGE" ]]; then
-          echo "Setting image: $IMAGE"
-          kustomize edit set image "$IMAGE"
+        if [[ -n "$IMAGES" ]]; then
+          echo "Setting image: $IMAGES"
+          kustomize edit set image $IMAGES
         fi
 
         if [[ -n "$SECRETS" ]]; then
