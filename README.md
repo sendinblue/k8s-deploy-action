@@ -1,6 +1,9 @@
-# Deploy Action
+# K8s Deploy Action
 
-This action performs login and deployment of an image to [GCR].
+This action performs generation of Kubernetes (K8s) resources from 
+[Kustomize] sources and apply the configuration to a K8s cluster.
+
+*Hint:* The _kubctl_ must be configured in a previous step.
 
 ## Inputs
 
@@ -51,4 +54,4 @@ None.
       fooToken=abc123
 ```
 
-[GCR]: https://cloud.google.com/container-registry
+[Kustomize]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
