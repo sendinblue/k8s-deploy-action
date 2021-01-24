@@ -1,0 +1,56 @@
+name: 'K8S Deploy Action'
+description: 'Configures secrets and performs deployment to Kubernetes'
+inputs:
+  resource-directory:
+    description: 'Location of the Kubernetes deployment resources'
+    required: true
+  image:
+    description: 'Image to deploy'
+    required: true
+  secrets-name:
+    description: 'Name of the Secret resource'
+    default: 'secrets'
+    required: false
+  secrets-from-files:
+    description: 'Secrets from files to set (e.g. for multi-line secrets)'
+    required: false
+  secrets:
+    description: 'Literal secrets to set'
+    required: false
+  dry-run:
+    description: 'Strategy passed to kubectl apply. Must be "none", "server", or "client".'
+    default: 'none'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure image, secrets, and deploy image
+      env:
+        IMAGE: ${{ inputs.image }}
+        SECRETS_NAME: ${{ inputs.secrets-name }}
+        SECRETS: ${{ inputs.secrets }}
+        SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
+        DRY_RUN: ${{ inputs.dry-run }}
+      working-directory: ${{ inputs.resource-directory }}
+      run: |
+        if [[ -n "$IMAGE" ]]; then
+          echo "Setting image: $IMAGE"
+          kustomize edit set image "$IMAGE"
+        fi
+
+        if [[ -n "$SECRETS" ]]; then
+          echo "Adding literal secrets."
+          echo "$SECRETS" > secrets.env
+          kustomize edit add secret $SECRETS_NAME --from-env-file=secrets.env
+        fi
+
+        if [[ -n "$SECRETS_FROM_FILES" ]]; then
+          while IFS= read -r line; do
+              echo "Adding secret from file: ${line}"
+              kustomize edit add secret $SECRETS_NAME --from-file=${line}
+          done <<< "$SECRETS_FROM_FILES"
+        fi
+
+        echo "Applying kubectl (dry-run=$DRY_RUN)."
+        kustomize build | kubectl apply --dry-run="$DRY_RUN" --filename -
+      shell: bash
