@@ -1,0 +1,28 @@
+name: Test action
+on:
+  push:
+jobs:
+  test:
+    name: Test action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Arrange
+      run: |
+        echo "Starting Arrange"
+        alias kubectl='echo "MOCKED kubectl CALLED with parameters $@"'
+        alias cmd2='echo "::set-output name=cmd2-mock::$@"'
+        kubectl
+
+    - name: Act
+      id: act
+      run: |
+        echo "Starting Act"
+        kubectl
+        cmd
+
+    - name: Assert
+      run: |
+        echo ${{ steps.act.outputs.cmd2-mock }}
+
