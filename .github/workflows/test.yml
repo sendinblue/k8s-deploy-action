@@ -8,19 +8,37 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Arrange
-        id: arrange
-        uses: './.github/sendinblue/mockbin-action'
+      - uses: './.github/sendinblue/mockbin-action'
         with:
           command: kubectl
 
-      - name: Act
-        id: act
-        run: |
-          echo "Starting Act"
-          echo "PATH: $PATH"
-          echo "Executing: kubectl x y"
-          kubectl x y
+      - uses: './.github/sendinblue/mockbin-action'
+          with:
+            command: kustomize
 
-          ls -l
-          cat "$MOCKBINPATH/mockbin.out"
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: my-resource-directory
+          image: my-image
+#          secrets-name: my-secret-name
+#          secrets: |
+#            foo=bar
+
+      - uses: './.github/sendinblue/mockbin-action'
+          with:
+            command: kustomize
+            assert-call: 0
+            assert-args: '["edit", "set", "image", "my-image"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+          with:
+            command: kustomize
+            assert-call: 1
+            assert-args: '["bild"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+          with:
+            command: kubectl
+            assert-call: 0
+            assert-args: '["apply", "--dry-run=\"none\"", "--filename", "-"]'

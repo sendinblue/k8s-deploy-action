@@ -4,26 +4,46 @@ inputs:
   command:
     description: 'Command to mock'
     required: true
+  assert-call-index:
+    description: 'Assert call index (starts with 0)'
+    default: '0'
+    required: false
+  assert-args:
+    description: 'Assert call arguments'
+    required: false
+
 runs:
   using: 'composite'
   steps:
     - name: Configure image, secrets, and deploy image
       env:
-        MOCKBINPATH: ${{ github.workspace }}/.mockbin
+        MOCKBIN_PATH: ${{ github.workspace }}/.mockbin
         MOCKCOMMAND: ${{ inputs.command }}
+        ASSERT_ARGS: ${{ inputs.assert-args }}
       run: |
-        if [[ ! -d "$MOCKBINPATH" ]]; then
-          mkdir -p "$MOCKBINPATH"
-          NODEJS=$(which node)
-          PATH="$MOCKBINPATH:$PATH"
+        if [[ ! -d "$MOCKBIN_PATH" ]]; then
+          mkdir -p "$MOCKBIN_PATH"
+          MOCKBIN_ORIGINAL_NODEJS=$(which node)
+          PATH="$MOCKBIN_PATH:$PATH"
           echo "Extending PATH: $PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
-          echo "MOCKBINPATH=$MOCKBINPATH" >> $GITHUB_ENV
+          echo "MOCKBIN_PATH=$MOCKBIN_PATH" >> $GITHUB_ENV
+          echo "MOCKBIN_ORIGINAL_NODEJS=$MOCKBIN_ORIGINAL_NODEJS" >> $GITHUB_ENV
         fi
 
         # Create executable mock
-        echo "#!${NODEJS}" > "$MOCKBINPATH/$MOCKCOMMAND"
-        cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/$MOCKCOMMAND"
-        chmod +x "$MOCKBINPATH/$MOCKCOMMAND"
+        if [[ ! -f "$MOCKBIN_PATH/$MOCKCOMMAND" ]]; then
+          echo "#!${MOCKBIN_ORIGINAL_NODEJS}" > "$MOCKBIN_PATH/$MOCKCOMMAND"
+          cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBIN_PATH/$MOCKCOMMAND"
+          chmod +x "$MOCKBIN_PATH/$MOCKCOMMAND"
+        fi
+
+        if [[ -n "${{ inputs.assert-args }}" ]]; then
+          $MOCKBIN_ORIGINAL_NODEJS "${{ github.action_path }}/assets/assert.js" \
+            --output-cmd "$MOCKCOMMAND" \
+            --output-file "$MOCKBIN_PATH/$MOCKCOMMAND.mockbinout" \
+            --output-index "$ASSERT_CALL" \
+            --expected-args '$ASSERT_ARGS'
+        fi
 
       shell: bash
