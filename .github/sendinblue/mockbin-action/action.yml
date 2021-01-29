@@ -23,8 +23,13 @@ runs:
         pwd
 
         # Create mocked executable
+        echo "Add Node.js hashbang to the mock"
         echo "#!${NODEJS}" > "$MOCKBINPATH/${{ inputs.command }}"
+        echo "Add mock from: ${{ github.action_path }}/assets/mockbin.js"
         cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/${{ inputs.command }}"
+
+        echo "Mock content:"
+        cat "$MOCKBINPATH/${{ inputs.command }}"
 
         echo "TODO: Execute test"
         kubectl testmockbin
