@@ -19,7 +19,7 @@ jobs:
       - name: Act
         uses: './'
         with:
-          resource-directory: my-resource-directory
+          resource-directory: './'
           image: my-image
 #          secrets-name: my-secret-name
 #          secrets: |
