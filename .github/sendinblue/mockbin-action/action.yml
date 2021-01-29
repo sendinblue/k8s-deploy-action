@@ -24,7 +24,7 @@ runs:
 
         # Create mocked executable
         echo "#!${NODEJS}" > "$MOCKBINPATH/${{ inputs.command }}"
-        cat "${{ github.action_path }}/assets/mockbin.js >> "$MOCKBINPATH/kubectl"
+        cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/${{ inputs.command }}"
 
         echo "TODO: Execute test"
         kubectl testmockbin
