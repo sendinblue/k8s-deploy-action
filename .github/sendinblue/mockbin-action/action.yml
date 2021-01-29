@@ -17,6 +17,7 @@ runs:
           mkdir -p "$MOCKBINPATH"
           NODEJS=$(which node)
           PATH="$MOCKBINPATH:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
         fi
 
         echo "PATH: $PATH"
@@ -28,9 +29,6 @@ runs:
         echo "Add mock from: ${{ github.action_path }}/assets/mockbin.js"
         cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/${{ inputs.command }}"
         chmod +x "$MOCKBINPATH/${{ inputs.command }}"
-
-        echo "Mock content:"
-        cat "$MOCKBINPATH/${{ inputs.command }}"
 
         echo "TODO: Execute test"
         which kubectl
