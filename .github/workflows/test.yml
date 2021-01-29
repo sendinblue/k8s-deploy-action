@@ -6,22 +6,21 @@ jobs:
     name: Test action
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Arrange
-      id: arrange
-      uses: './.github/sendinblue/mockbin-action'
-      with:
-        command: kubectl
+      - name: Arrange
+        id: arrange
+        uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
 
-    - name: Act
-      id: act
-      run: |
-        echo "Starting Act"
-        echo "PATH: $PATH"
-        echo "Executing: kubectl x y"
-        kubectl x y
+      - name: Act
+        id: act
+        run: |
+          echo "Starting Act"
+          echo "PATH: $PATH"
+          echo "Executing: kubectl x y"
+          kubectl x y
 
-        ls -l
-        cat ./.mockbin/mockbin.out
-
+          ls -l
+          cat "$MOCKBINPATH/mockbin.out"

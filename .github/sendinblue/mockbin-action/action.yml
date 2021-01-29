@@ -18,6 +18,7 @@ runs:
           NODEJS=$(which node)
           PATH="$MOCKBINPATH:$PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
+          echo "MOCKBINPATH=$MOCKBINPATH" >> $GITHUB_ENV
         fi
 
         echo "PATH: $PATH"
