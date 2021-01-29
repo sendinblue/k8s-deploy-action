@@ -7,7 +7,7 @@ const resultsOutputFile = `${mockbinPath}/mockbin.out`;
 // Generate output
 const timestamp = process.hrtime.bigint();
 const [, command] = process.argv;
-const commandName = path.baseName(command);
+const commandName = path.basename(command);
 
 const result = {
   "ts": timestamp,
