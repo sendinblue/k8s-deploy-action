@@ -17,10 +17,10 @@ const result = {
 };
 
 // Read piped data
-if (!process.stdin.isTTY) {
-  const stdinBuffer = fs.readFileSync(0);
-  result['stdin'] = stdinBuffer.toString();
-}
+// if (!process.stdin.isTTY) {
+//   const stdinBuffer = fs.readFileSync(0);
+//   result['stdin'] = stdinBuffer.toString();
+// }
 
 // Append result
 let results = [];

@@ -4,12 +4,6 @@ const fs = require('fs');
 const outputFileName = getOption('output-file');
 let callResults = JSON.parse(fs.readFileSync(outputFileName, 'utf8'));
 
-// Load command in file
-const outputCommand = parseInt(getOption('output-cmd'));
-if (outputCommand) {
-  callResults = callResults.filter((r) => r.cmd === outputCommand);
-}
-
 // Load index in file
 const outputIndex = parseInt(getOption('output-index'));
 const callResult = callResults[outputIndex];

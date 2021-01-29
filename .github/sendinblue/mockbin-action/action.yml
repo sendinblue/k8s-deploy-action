@@ -44,10 +44,9 @@ runs:
         fi
 
         if [[ -n "$ASSERT_ARGS$ASSERT_STDIN" ]]; then
-          echo "Performing assertion"
+          echo "Performing assertion on: $MOCKBIN_PATH/$MOCKCOMMAND.mockbinout"
           $MOCKBIN_ORIGINAL_NODEJS "${{ github.action_path }}/assets/assert.js" \
             --output-file "$MOCKBIN_PATH/$MOCKCOMMAND.mockbinout" \
-            --output-cmd "$MOCKCOMMAND" \
             --output-index "$ASSERT_CALL_INDEX" \
             --expected-args '$ASSERT_ARGS' \
             --expected-stdin '$ASSERT_STDIN'
