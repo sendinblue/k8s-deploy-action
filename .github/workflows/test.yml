@@ -28,17 +28,17 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           command: kustomize
-          assert-call: 0
+          assert-call-index: 0
           assert-args: '["edit", "set", "image", "my-image"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
           command: kustomize
-          assert-call: 1
+          assert-call-index: 1
           assert-args: '["bild"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
           command: kubectl
-          assert-call: 0
+          assert-call-index: 0
           assert-args: '["apply", "--dry-run=\"none\"", "--filename", "-"]'
