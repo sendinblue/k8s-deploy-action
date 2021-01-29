@@ -1,0 +1,34 @@
+name: 'Mockbin Action'
+description: 'Tool for testing actions by mocking binaries'
+inputs:
+  command:
+    description: 'Command to mock'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure image, secrets, and deploy image
+      env:
+        MOCKBINPATH: "$GITHUB_WORKSPACE/.mockbin"
+      run: |
+        echo "MOCKBINPATH: $MOCKBINPATH"
+
+        if [[ ! -d "$MOCKBINPATH" ]]; then
+          mkdir -p "$MOCKBINPATH"
+          NODEJS=$(which node)
+          PATH="$MOCKBINPATH:$PATH"
+        fi
+
+        echo "PATH: $PATH"
+        pwd
+
+        # Create mocked executable
+        echo "#!${NODEJS}" > "$MOCKBINPATH/${{ inputs.command }}"
+        cat "${{ github.action_path }}/assets/mockbin.js >> "$MOCKBINPATH/kubectl"
+
+        echo "TODO: Execute test"
+        kubectl testmockbin
+
+        cat $MOCKBINPATH/mockbin.out
+
+      shell: bash
