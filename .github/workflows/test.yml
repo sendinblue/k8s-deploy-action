@@ -10,7 +10,7 @@ jobs:
 
     - name: Arrange
       id: arrange
-      uses: '.github/sendinblue/mockbin-action'
+      uses: './.github/sendinblue/mockbin-action'
       with:
         command: kubectl
 
