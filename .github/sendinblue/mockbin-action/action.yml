@@ -9,7 +9,7 @@ runs:
   steps:
     - name: Configure image, secrets, and deploy image
       env:
-        MOCKBINPATH: "$GITHUB_WORKSPACE/.mockbin"
+        MOCKBINPATH: $GITHUB_WORKSPACE/.mockbin
       run: |
         echo "MOCKBINPATH: $MOCKBINPATH"
 
