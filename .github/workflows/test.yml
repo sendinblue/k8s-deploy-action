@@ -13,8 +13,8 @@ jobs:
           command: kubectl
 
       - uses: './.github/sendinblue/mockbin-action'
-          with:
-            command: kustomize
+        with:
+          command: kustomize
 
       - name: Act
         uses: './'
@@ -26,19 +26,19 @@ jobs:
 #            foo=bar
 
       - uses: './.github/sendinblue/mockbin-action'
-          with:
-            command: kustomize
-            assert-call: 0
-            assert-args: '["edit", "set", "image", "my-image"]'
+        with:
+          command: kustomize
+          assert-call: 0
+          assert-args: '["edit", "set", "image", "my-image"]'
 
       - uses: './.github/sendinblue/mockbin-action'
-          with:
-            command: kustomize
-            assert-call: 1
-            assert-args: '["bild"]'
+        with:
+          command: kustomize
+          assert-call: 1
+          assert-args: '["bild"]'
 
       - uses: './.github/sendinblue/mockbin-action'
-          with:
-            command: kubectl
-            assert-call: 0
-            assert-args: '["apply", "--dry-run=\"none\"", "--filename", "-"]'
+        with:
+          command: kubectl
+          assert-call: 0
+          assert-args: '["apply", "--dry-run=\"none\"", "--filename", "-"]'
