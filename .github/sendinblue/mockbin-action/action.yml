@@ -10,31 +10,20 @@ runs:
     - name: Configure image, secrets, and deploy image
       env:
         MOCKBINPATH: ${{ github.workspace }}/.mockbin
+        MOCKCOMMAND: ${{ inputs.command }}
       run: |
-        echo "MOCKBINPATH: $MOCKBINPATH"
-
         if [[ ! -d "$MOCKBINPATH" ]]; then
           mkdir -p "$MOCKBINPATH"
           NODEJS=$(which node)
           PATH="$MOCKBINPATH:$PATH"
+          echo "Extending PATH: $PATH"
           echo "PATH=$PATH" >> $GITHUB_ENV
           echo "MOCKBINPATH=$MOCKBINPATH" >> $GITHUB_ENV
         fi
 
-        echo "PATH: $PATH"
-        pwd
-
-        # Create mocked executable
-        echo "Add Node.js hashbang to the mock"
-        echo "#!${NODEJS}" > "$MOCKBINPATH/${{ inputs.command }}"
-        echo "Add mock from: ${{ github.action_path }}/assets/mockbin.js"
-        cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/${{ inputs.command }}"
-        chmod +x "$MOCKBINPATH/${{ inputs.command }}"
-
-        echo "TODO: Execute test"
-        which kubectl
-        kubectl testmockbin
-
-        cat $MOCKBINPATH/mockbin.out
+        # Create executable mock
+        echo "#!${NODEJS}" > "$MOCKBINPATH/$MOCKCOMMAND"
+        cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBINPATH/$MOCKCOMMAND"
+        chmod +x "$MOCKBINPATH/$MOCKCOMMAND"
 
       shell: bash

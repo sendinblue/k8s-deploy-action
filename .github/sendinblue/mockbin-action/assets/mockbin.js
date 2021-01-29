@@ -10,9 +10,9 @@ const [, command] = process.argv;
 const commandName = path.basename(command);
 
 const result = {
-  "ts": `${timestamp}`,
-  "cmd": commandName,
-  "args": process.argv.slice(2),
+  ts: `${timestamp}`,
+  cmd: commandName,
+  args: process.argv.slice(2),
 };
 
 // Append result
