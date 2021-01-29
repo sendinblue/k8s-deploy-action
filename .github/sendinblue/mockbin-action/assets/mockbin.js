@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const mockbinPath = process.env.MOCKBINPATH ? process.env.MOCKBINPATH : './';
 const resultsOutputFile = `${mockbinPath}/mockbin.out`;
