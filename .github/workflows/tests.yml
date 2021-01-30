@@ -10,11 +10,9 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          command: kustomize
+          commands: |
+            kubectl
+            kustomize
 
       - name: Act
         uses: './'
@@ -24,19 +22,19 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 0
           assert-args: '["edit", "set", "image", "my-image"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 1
           assert-args: '["build"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
+          commands: kubectl
           assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
@@ -48,11 +46,9 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          command: kustomize
+          commands: |
+            kubectl
+            kustomize
 
       - name: Act
         uses: './'
@@ -70,19 +66,19 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 0
           assert-args: '["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 1
           assert-args: '["build"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
+          commands: kubectl
           assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
@@ -94,11 +90,9 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          command: kustomize
+          commands: |
+            kubectl
+            kustomize
 
       - name: Prepare secret files
         working-directory: ./
@@ -117,25 +111,25 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 0
           assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 1
           assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kustomize
+          commands: kustomize
           assert-call-index: 2
           assert-args: '["build"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
+          commands: kubectl
           assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
@@ -147,12 +141,10 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          command: kustomize
-
+          commands: |
+            kubectl
+            kustomize
+            
       - name: Act
         uses: './'
         with:
@@ -161,6 +153,6 @@ jobs:
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
-          command: kubectl
+          commands: kubectl
           assert-call-index: 0
           assert-args: '["apply", "--dry-run=server", "--filename", "-"]'

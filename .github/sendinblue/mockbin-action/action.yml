@@ -1,15 +1,14 @@
 name: 'Mockbin Action'
 description: 'Tool for testing actions by mocking binaries'
 inputs:
-  command:
-    description: 'Command to mock'
+  commands:
+    description: 'Commands to mock'
     required: true
   assert-call-index:
-    description: 'Assert call index (starts with 0)'
-    default: '0'
+    description: 'Assert for call with the given index'
     required: false
   assert-args:
-    description: 'Assert call arguments'
+    description: 'Assert for call with given arguments (JSON list)'
     required: false
   assert-stdin:
     description: 'Assert piped stdin'
@@ -21,7 +20,7 @@ runs:
     - name: Configure image, secrets, and deploy image
       env:
         MOCKBIN_PATH: ${{ github.workspace }}/.mockbin
-        MOCKCOMMAND: ${{ inputs.command }}
+        COMMANDS: ${{ inputs.commands }}
         ASSERT_CALL_INDEX: ${{ inputs.assert-call-index }}
         ASSERT_ARGS: ${{ inputs.assert-args }}
         ASSERT_STDIN: ${{ inputs.assert-stdin }}
@@ -36,12 +35,21 @@ runs:
           echo "MOCKBIN_ORIGINAL_NODEJS=$MOCKBIN_ORIGINAL_NODEJS" >> $GITHUB_ENV
         fi
 
-        # Create executable mock
-        if [[ ! -f "$MOCKBIN_PATH/$MOCKCOMMAND" ]]; then
-          echo "#!${MOCKBIN_ORIGINAL_NODEJS}" > "$MOCKBIN_PATH/$MOCKCOMMAND"
-          cat "${{ github.action_path }}/assets/mockbin.js" >> "$MOCKBIN_PATH/$MOCKCOMMAND"
-          chmod +x "$MOCKBIN_PATH/$MOCKCOMMAND"
-        fi
+        create_command_mock () {
+          local command="$MOCKBIN_PATH/$1"
+          if [[ ! -f "$command" ]]; then
+            echo "Creating command: $command"
+            echo "#!${MOCKBIN_ORIGINAL_NODEJS}" > "$command"
+            cat "${{ github.action_path }}/assets/mockbin.js" >> "$command"
+            chmod +x "$MOCKBIN_PATH/$command"
+          fi
+        }
+
+        while IFS= read -r cmd; do
+          if [[ -n "$cmd" ]]; then
+              create_command_mock $cmd
+          fi
+        done <<< "$COMMANDS"
 
         if [[ -n "$ASSERT_ARGS$ASSERT_STDIN" ]]; then
           echo "Performing assertion on: $MOCKBIN_PATH/$MOCKCOMMAND.mockbinout"
