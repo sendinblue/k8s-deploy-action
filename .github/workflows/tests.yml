@@ -1,0 +1,140 @@
+name: Test action
+on:
+  push:
+jobs:
+  should-set-image-and-apply-config:
+    name: Should set image and apply config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          image: my-image
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 0
+          assert-args: '["edit", "set", "image", "my-image"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 1
+          assert-args: '["build"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+          assert-call-index: 0
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-set-secrets:
+    name: Should set secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          secrets-name: my-secrets
+          secrets: |
+            foo=bar
+
+      - name: Secrets file must be present
+        run: |
+          if [[! -f "secrets.env" || "$(cat secrets.env)" != "$(echo -n 'foo=bar\n')" ]]; then
+            exit 1
+          fi
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 0
+          assert-args: '["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 1
+          assert-args: '["build"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+          assert-call-index: 0
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-set-secrets-from-file:
+    name: Should set secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+
+      - name: Prepare secret files
+        working-directory: ./
+        run: |
+          touch ./foo.secret
+          touch ./bar.secret
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          secrets-name: my-secrets
+          secrets-from-files: |-
+            fooSecret=foo.secret
+            barSecret=bar.secret
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 0
+          assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 1
+          assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+          assert-call-index: 1
+          assert-args: '["build"]'
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+          assert-call-index: 0
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
