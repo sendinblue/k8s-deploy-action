@@ -130,7 +130,7 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           command: kustomize
-          assert-call-index: 1
+          assert-call-index: 2
           assert-args: '["build"]'
 
       - uses: './.github/sendinblue/mockbin-action'
