@@ -38,20 +38,20 @@ runs:
         source "$GITHUB_ACTION_PATH/lib/create_command_mock.sh"
         source "$GITHUB_ACTION_PATH/lib/perform_assert.sh"
 
-        while IFS= read -r cmd; do
+        for cmd in $COMMANDS; do
           if [[ -n "$cmd" ]]; then
             create_command_mock "$cmd"
 
             call_index=${ASSERT_CALL_INDEX:=0}
-            while IFS= read -r expected_args; do
+            for expected_args in $ASSERT_ARGS; do
               if [[ -n "$expected_args" ]]; then
                 perform_assert "$cmd" "$call_index" "$expected_args"
                 echo "Counter: $call_index"
-                # ((call_index++))
+                ((call_index++))
                 echo "After: $call_index"
               fi
-            done <<< "$ASSERT_ARGS"
+            done
           fi
-        done <<< "$COMMANDS"
+        done
 
       shell: bash
