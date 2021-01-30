@@ -38,7 +38,7 @@ runs:
         source "$GITHUB_ACTION_PATH/lib/create_command_mock.sh"
         source "$GITHUB_ACTION_PATH/lib/perform_assert.sh"
 
-        IFS="\n"
+        IFS=$'\n'
         for cmd in $COMMANDS; do
           if [[ -n "$cmd" ]]; then
             create_command_mock "$cmd"
