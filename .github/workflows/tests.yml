@@ -102,6 +102,7 @@ jobs:
           commands: kustomize
           assert-args: |
             ["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]
+            ["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]
             ["build"]
 
       - uses: './.github/sendinblue/mockbin-action'
