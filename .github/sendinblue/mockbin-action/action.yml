@@ -35,15 +35,7 @@ runs:
           echo "MOCKBIN_ORIGINAL_NODEJS=$MOCKBIN_ORIGINAL_NODEJS" >> $GITHUB_ENV
         fi
 
-        create_command_mock () {
-          local command="$MOCKBIN_PATH/$1"
-          if [[ ! -f "$command" ]]; then
-            echo "Creating command: $command"
-            echo "#!${MOCKBIN_ORIGINAL_NODEJS}" > "$command"
-            cat "${{ github.action_path }}/assets/mockbin.js" >> "$command"
-            chmod +x "$command"
-          fi
-        }
+        source "$GITHUB_ACTION_PATH/assets/create_command_mock.sh"
 
         perform_assert () {
           local call_file="$MOCKBIN_PATH/$1.mockbinout"
