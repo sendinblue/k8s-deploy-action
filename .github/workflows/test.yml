@@ -35,7 +35,7 @@ jobs:
         with:
           command: kustomize
           assert-call-index: 1
-          assert-args: '["bild"]'
+          assert-args: '["build"]'
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
