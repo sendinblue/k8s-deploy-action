@@ -41,7 +41,7 @@ runs:
             echo "Creating command: $command"
             echo "#!${MOCKBIN_ORIGINAL_NODEJS}" > "$command"
             cat "${{ github.action_path }}/assets/mockbin.js" >> "$command"
-            chmod +x "$MOCKBIN_PATH/$command"
+            chmod +x "$command"
           fi
         }
 
