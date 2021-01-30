@@ -41,4 +41,4 @@ jobs:
         with:
           command: kubectl
           assert-call-index: 0
-          assert-args: '["apply", "--dry-run=\"none\"", "--filename", "-"]'
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
