@@ -23,14 +23,9 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kustomize
-          assert-call-index: 0
-          assert-args: '["edit", "set", "image", "my-image"]'
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          commands: kustomize
-          assert-call-index: 1
-          assert-args: '["build"]'
+          assert-args: |
+            ["edit", "set", "image", "my-image"]
+            ["build"]
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
@@ -144,7 +139,7 @@ jobs:
           commands: |
             kubectl
             kustomize
-            
+
       - name: Act
         uses: './'
         with:

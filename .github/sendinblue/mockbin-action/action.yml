@@ -5,10 +5,10 @@ inputs:
     description: 'Commands to mock'
     required: true
   assert-call-index:
-    description: 'Assert for call with the given index'
+    description: 'Assert for call (starting) with the given index'
     required: false
   assert-args:
-    description: 'Assert for call with given arguments (JSON list)'
+    description: 'Assert for calls with given arguments (JSON array)'
     required: false
   assert-stdin:
     description: 'Assert piped stdin'
@@ -45,19 +45,31 @@ runs:
           fi
         }
 
+        perform_assert () {
+          local call_file="$MOCKBIN_PATH/$1.mockbinout"
+          local call_index="$2"
+          local expected_args="$3"
+
+          echo "Performing assertion on: $command"
+          $MOCKBIN_ORIGINAL_NODEJS "${{ github.action_path }}/assets/assert.js" \
+            --call-file "$call_file" \
+            --call-index "$call_index" \
+            --expected-args "$expected_args" \
+            --expected-stdin "$ASSERT_STDIN"
+        }
+
         while IFS= read -r cmd; do
           if [[ -n "$cmd" ]]; then
-              create_command_mock $cmd
+            create_command_mock "$cmd"
+
+            call_index=${ASSERT_CALL_INDEX:=0}
+            while IFS= read -r expected_args; do
+              if [[ -n "$expected_args" ]]; then
+                perform_assert "$cmd" "$call_index" "$expected_args"
+                ((call_index++))
+              fi
+            done <<< "$ASSERT_ARGS"
           fi
         done <<< "$COMMANDS"
-
-        if [[ -n "$ASSERT_ARGS$ASSERT_STDIN" ]]; then
-          echo "Performing assertion on: $MOCKBIN_PATH/$MOCKCOMMAND.mockbinout"
-          $MOCKBIN_ORIGINAL_NODEJS "${{ github.action_path }}/assets/assert.js" \
-            --output-file "$MOCKBIN_PATH/$MOCKCOMMAND.mockbinout" \
-            --output-index "$ASSERT_CALL_INDEX" \
-            --expected-args "$ASSERT_ARGS" \
-            --expected-stdin "$ASSERT_STDIN"
-        fi
 
       shell: bash

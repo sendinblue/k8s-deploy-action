@@ -1,12 +1,13 @@
 const fs = require('fs');
 
 // Load file
-const outputFileName = getOption('output-file');
-let callResults = JSON.parse(fs.readFileSync(outputFileName, 'utf8'));
+const callFileName = getOption('call-file');
+let callResults = JSON.parse(fs.readFileSync(callFileName, 'utf8'));
 
 // Load index in file
-const outputIndex = parseInt(getOption('output-index'));
-const callResult = callResults[outputIndex];
+const callIndexStr = getOption('call-index');
+const callIndex = parseInt(callIndexStr || 0);
+const callResult = callResults[callIndex];
 
 // Get and stringify expected output
 const expectedArgs = getOption('expected-args');
