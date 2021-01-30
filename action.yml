@@ -49,8 +49,10 @@ runs:
 
         if [[ -n "$SECRETS_FROM_FILES" ]]; then
           while IFS= read -r line; do
-              echo "Adding secret from file: ${line}"
-              kustomize edit add secret $SECRETS_NAME --from-file=${line}
+              if [[ -n "$line" ]]; then
+                echo "Adding secret from file: ${line}"
+                kustomize edit add secret $SECRETS_NAME --from-file=${line}
+              fi
           done <<< "$SECRETS_FROM_FILES"
         fi
 

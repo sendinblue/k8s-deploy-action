@@ -111,7 +111,7 @@ jobs:
         with:
           resource-directory: './'
           secrets-name: my-secrets
-          secrets-from-files: |-
+          secrets-from-files: |
             fooSecret=foo.secret
             barSecret=bar.secret
 
@@ -138,3 +138,29 @@ jobs:
           command: kubectl
           assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-dry-run-server:
+    name: Should set secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          dry-run: server
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          command: kubectl
+          assert-call-index: 0
+          assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
