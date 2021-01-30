@@ -50,7 +50,7 @@ runs:
           local call_index="$2"
           local expected_args="$3"
 
-          echo "Performing assertion on: $command"
+          echo "Performing assertion on: $call_file (starting at $call_index)"
           $MOCKBIN_ORIGINAL_NODEJS "${{ github.action_path }}/assets/assert.js" \
             --call-file "$call_file" \
             --call-index "$call_index" \
