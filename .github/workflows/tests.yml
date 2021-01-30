@@ -87,7 +87,7 @@ jobs:
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets-from-file:
-    name: Should set secrets
+    name: Should set secrets from files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -140,7 +140,7 @@ jobs:
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
   should-dry-run-server:
-    name: Should set secrets
+    name: Should dry-run on server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
