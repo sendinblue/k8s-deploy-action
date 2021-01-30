@@ -30,7 +30,6 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kubectl
-          assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets:
@@ -62,19 +61,13 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kustomize
-          assert-call-index: 0
-          assert-args: '["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]'
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          commands: kustomize
-          assert-call-index: 1
-          assert-args: '["build"]'
+          assert-args: |
+            ["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]
+            ["build"]
 
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kubectl
-          assert-call-index: 0
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets-from-file:
@@ -107,26 +100,10 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kustomize
-          assert-call-index: 0
-          assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]'
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          commands: kustomize
-          assert-call-index: 1
-          assert-args: '["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]'
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          commands: kustomize
-          assert-call-index: 2
-          assert-args: '["build"]'
-
-      - uses: './.github/sendinblue/mockbin-action'
-        with:
-          commands: kubectl
-          assert-call-index: 0
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: |
+            ["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]
+            ["build"]
+            ["apply", "--dry-run=none", "--filename", "-"]
 
   should-dry-run-server:
     name: Should dry-run on server
@@ -149,5 +126,4 @@ jobs:
       - uses: './.github/sendinblue/mockbin-action'
         with:
           commands: kubectl
-          assert-call-index: 0
           assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
