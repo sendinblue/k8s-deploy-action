@@ -103,7 +103,11 @@ jobs:
           assert-args: |
             ["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]
             ["build"]
-            ["apply", "--dry-run=none", "--filename", "-"]
+
+      - uses: './.github/sendinblue/mockbin-action'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
 
   should-dry-run-server:
     name: Should dry-run on server
