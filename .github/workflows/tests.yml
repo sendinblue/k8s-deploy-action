@@ -18,7 +18,7 @@ jobs:
         uses: './'
         with:
           resource-directory: './'
-          image: my-image
+          images: my-image
 
       - uses: 'dimw/mockbin-action@main'
         with:
