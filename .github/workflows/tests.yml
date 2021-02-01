@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: |
             kubectl
@@ -20,14 +20,14 @@ jobs:
           resource-directory: './'
           image: my-image
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kustomize
           assert-args: |
             ["edit", "set", "image", "my-image"]
             ["build"]
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: |
             kubectl
@@ -58,14 +58,14 @@ jobs:
             exit 1
           fi
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kustomize
           assert-args: |
             ["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]
             ["build"]
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: |
             kubectl
@@ -97,7 +97,7 @@ jobs:
             fooSecret=foo.secret
             barSecret=bar.secret
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kustomize
           assert-args: |
@@ -105,7 +105,7 @@ jobs:
             ["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]
             ["build"]
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
           assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: |
             kubectl
@@ -128,7 +128,7 @@ jobs:
           resource-directory: './'
           dry-run: server
 
-      - uses: './.github/sendinblue/mockbin-action'
+      - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
           assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
