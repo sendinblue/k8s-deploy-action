@@ -1,0 +1,134 @@
+name: Test action
+on:
+  push:
+jobs:
+  should-set-image-and-apply-config:
+    name: Should set image and apply config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          images: my-image
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kustomize
+          assert-args: |
+            ["edit", "set", "image", "my-image"]
+            ["build"]
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-set-secrets:
+    name: Should set secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          secrets-name: my-secrets
+          secrets: |
+            foo=bar
+
+      - name: Secrets file must be present
+        run: |
+          if [[! -f "secrets.env" || "$(cat secrets.env)" != "$(echo -n 'foo=bar\n')" ]]; then
+            exit 1
+          fi
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kustomize
+          assert-args: |
+            ["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]
+            ["build"]
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-set-secrets-from-file:
+    name: Should set secrets from files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Prepare secret files
+        working-directory: ./
+        run: |
+          touch ./foo.secret
+          touch ./bar.secret
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          secrets-name: my-secrets
+          secrets-from-files: |
+            fooSecret=foo.secret
+            barSecret=bar.secret
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kustomize
+          assert-args: |
+            ["edit", "add", "secret", "my-secrets", "--from-file=fooSecret=foo.secret"]
+            ["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]
+            ["build"]
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+
+  should-dry-run-server:
+    name: Should dry-run on server
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          dry-run: server
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
