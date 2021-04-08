@@ -31,6 +31,15 @@ Secrets from files to set (e.g. for multi-line secrets)
 
 Literal secrets to set.
 
+
+### `configmap-name`
+
+Name of the configmap. Default: `configmap`.
+
+### `configmap`
+
+Literals of configmap to set.
+
 ### `dry-run`
 
 [Strategy](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#apply) passed to `kubectl apply`. Must be `none`, `server`, or `client`. Default: `none`. 
@@ -60,6 +69,10 @@ None.
       fooPrivateKey=fooPrivateKey.secret
     secrets: |
       fooToken=abc123
+    configmap-name: 'configs'
+    configmap: |-
+      labels=production
+      auto-scaling=true
 ```
 
 [Kustomize]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
