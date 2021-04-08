@@ -131,10 +131,10 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=\"\"", "--dry-run=server", "--filename", "-"]'
 
   should-use-kube-config-data:
-    name: Should dry-run on server
+    name: Should use custom .kube/config
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
