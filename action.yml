@@ -74,5 +74,7 @@ runs:
 
     - name: Cleanup
       run: |
-        rm "${{ steps.main.outputs.kubectl-kubeconfig }}"
+        if [ -f "${{ steps.main.outputs.kubectl-kubeconfig }}"]; then
+          rm "${{ steps.main.outputs.kubectl-kubeconfig }}"
+        fi
       shell: bash
