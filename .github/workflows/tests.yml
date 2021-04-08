@@ -155,4 +155,5 @@ jobs:
       - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/.k8s-deploy-action-kube-config-[a-z0-9]+.yml", "--dry-run=none", "--filename", "-"]'
+          assert-args: |
+            ["apply", "--kubeconfig=${{ github.workspace }}/.k8s-deploy-action-kube-config-[a-z0-9]+.yml", "--dry-run=none", "--filename", "-"]
