@@ -30,7 +30,7 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets:
     name: Should set secrets
@@ -68,7 +68,7 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets-from-file:
     name: Should set secrets from files
@@ -108,7 +108,7 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-dry-run-server:
     name: Should dry-run on server
@@ -131,7 +131,7 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--kubeconfig=\"\"", "--dry-run=server", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=server", "--filename", "-"]'
 
   should-use-kube-config-data:
     name: Should use custom .kube/config
@@ -155,4 +155,4 @@ jobs:
       - uses: 'dimw/mockbin-action@main'
         with:
           commands: kubectl
-          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/kube-config.yml", "--dry-run=server", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/kube-config.yml", "--dry-run=none", "--filename", "-"]'
