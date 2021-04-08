@@ -59,7 +59,7 @@ runs:
         fi
 
         if [[ -n "$KUBE_CONFIG_DATA" ]]; then
-          RANDOM_HASH=$(cat /dev/random | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
+          RANDOM_HASH=$(date +"%s%N")
           KUBECTL_KUBECONFIG="${{ github.workspace }}/.k8s-deploy-action-kube-config-${RANDOM_HASH}.yml"
           echo "$KUBE_CONFIG_DATA" > "$KUBECTL_KUBECONFIG"
           echo "::set-output name=kubectl-kubeconfig::$KUBECTL_KUBECONFIG"
