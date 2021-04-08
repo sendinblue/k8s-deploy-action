@@ -152,15 +152,7 @@ jobs:
           kube-config-data: |-
             foo: bar
 
-      - name: Check kubeconfig file content
-        run: |
-          KUBE_CONFIG_DATA=$(cat "${{ github.workspace }}/kube-config.yml")
-          if [[ "$KUBE_CONFIG_DATA" != "foo: bar" ]]; then
-            echo "The kube-config.yml was not created properly!"
-            exit 1
-          fi
-
       - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/kube-config.yml", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/.k8s-deploy-action-kube-config-[a-z0-9]+.yml", "--dry-run=none", "--filename", "-"]'

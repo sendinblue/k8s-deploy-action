@@ -28,6 +28,7 @@ runs:
   using: 'composite'
   steps:
     - name: Configure image, secrets, and deploy image
+      id: main
       env:
         IMAGES: ${{ inputs.images }}
         SECRETS_NAME: ${{ inputs.secrets-name }}
@@ -58,8 +59,10 @@ runs:
         fi
 
         if [[ -n "$KUBE_CONFIG_DATA" ]]; then
-          echo "$KUBE_CONFIG_DATA" > ${{ github.workspace }}/kube-config.yml
-          KUBECTL_KUBECONFIG="${{ github.workspace }}/kube-config.yml"
+          RANDOM_HASH=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
+          KUBECTL_KUBECONFIG="${{ github.workspace }}/.k8s-deploy-action-kube-config-${RANDOM_HASH}.yml"
+          echo "$KUBE_CONFIG_DATA" > "$KUBECTL_KUBECONFIG"
+          echo "::set-output name=kubectl-kubeconfig::${KUBECTL_KUBECONFIG}"
         fi
 
         echo "Applying kubectl (dry-run=$DRY_RUN)."
@@ -67,4 +70,9 @@ runs:
           --kubeconfig="$KUBECTL_KUBECONFIG" \
           --dry-run="$DRY_RUN" \
           --filename -
+      shell: bash
+
+    - name: Cleanup
+      run: |
+        rm "${{ steps.main.outputs.kubectl-kubeconfig }}"
       shell: bash
