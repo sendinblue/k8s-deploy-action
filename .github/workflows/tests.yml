@@ -110,6 +110,44 @@ jobs:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
+  should-set-configmap:
+    name: Should set configmap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          configmap-name: my-configmap
+          configmap: |
+            some=config
+
+      - name: Secrets file must be present
+        run: |
+          if [[! -f "configmap.env" || "$(cat configmap.env)" != "$(echo -n 'some=config\n')" ]]; then
+            exit 1
+          fi
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kustomize
+          assert-args: |
+            ["edit", "add", "configmap", "my-config", "--from-env-file=configmap.env"]
+            ["build"]
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
+
   should-dry-run-server:
     name: Should dry-run on server
     runs-on: ubuntu-latest

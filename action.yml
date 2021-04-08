@@ -21,6 +21,13 @@ inputs:
   secrets:
     description: 'Literal secrets to set'
     required: false
+  configmap-name:
+    description: 'Name of the configmap'
+    default: 'configmap'
+    required: false
+  configmap:
+    description: 'Literals of configmap to set'
+    required: false
   dry-run:
     description: 'Strategy passed to kubectl apply. Must be "none", "server", or "client".'
     default: 'none'
@@ -39,6 +46,8 @@ runs:
         SECRETS_NAME: ${{ inputs.secrets-name }}
         SECRETS: ${{ inputs.secrets }}
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
+        CONFIGMAP_NAME: ${{ inputs.configmap-name }}
+        CONFIGMAP: ${{ inputs.configmap }}
         KUBE_CONFIG_DATA: ${{ inputs.kube-config-data }}
         DRY_RUN: ${{ inputs.dry-run }}
       working-directory: ${{ inputs.resource-directory }}
@@ -49,7 +58,7 @@ runs:
         fi
 
         if [[ -n "$SECRETS" ]]; then
-          echo "Adding literal secrets."
+          echo "Adding literal secrets: $SECRETS_NAME"
           echo "$SECRETS" > secrets.env
           kustomize edit add secret $SECRETS_NAME --from-env-file=secrets.env
         fi
@@ -61,6 +70,12 @@ runs:
                 kustomize edit add secret $SECRETS_NAME --from-file=${line}
               fi
           done <<< "$SECRETS_FROM_FILES"
+        fi
+
+        if [[ -n "$CONFIGMAP" ]]; then
+          echo "Adding literals to configmap: $CONFIGMAP_NAME"
+          echo "$CONFIGMAP" > configmap.env
+          kustomize edit add configmap $CONFIGMAP_NAME --from-env-file=configmap.env
         fi
 
         if [[ -n "$KUBE_CONFIG_DATA" ]]; then
