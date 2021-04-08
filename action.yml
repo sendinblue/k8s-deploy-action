@@ -4,6 +4,9 @@ inputs:
   resource-directory:
     description: 'Location of the Kubernetes deployment resources'
     required: true
+  kube-config-data:
+    description: 'Content of the .kube/config file'
+    required: false
   images:
     description: 'Images to deploy'
     required: false
@@ -30,6 +33,7 @@ runs:
         SECRETS_NAME: ${{ inputs.secrets-name }}
         SECRETS: ${{ inputs.secrets }}
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
+        KUBE_CONFIG_DATA: ${{ inputs.kube-config-data }}
         DRY_RUN: ${{ inputs.dry-run }}
       working-directory: ${{ inputs.resource-directory }}
       run: |
@@ -53,6 +57,14 @@ runs:
           done <<< "$SECRETS_FROM_FILES"
         fi
 
+        if [[ -n "$KUBE_CONFIG_DATA" ]]; then
+          echo "$KUBE_CONFIG_DATA" > ${{ github.workspace }}/kube-config.yml
+          KUBECTL_KUBECONFIG="--kubeconfig \"${{ github.workspace }}/kube-config.yml\"
+        fi
+
         echo "Applying kubectl (dry-run=$DRY_RUN)."
-        kustomize build | kubectl apply --dry-run="$DRY_RUN" --filename -
+        kustomize build | kubectl apply \
+          $KUBECTL_KUBECONFIG \
+          --dry-run="$DRY_RUN" \
+          --filename -
       shell: bash

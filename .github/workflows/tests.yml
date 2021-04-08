@@ -132,3 +132,27 @@ jobs:
         with:
           commands: kubectl
           assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
+
+  should-use-kube-config-data:
+    name: Should dry-run on server
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          kube-config-data: |
+            foo: bar
+
+      - uses: 'dimw/mockbin-action@main'
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/kube-config.yml", "--dry-run=server", "--filename", "-"]'
