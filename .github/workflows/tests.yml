@@ -140,7 +140,7 @@ jobs:
         with:
           commands: kustomize
           assert-args: |
-            ["edit", "add", "configmap", "my-config", "--from-env-file=configmap.env"]
+            ["edit", "add", "configmap", "my-configmap", "--from-env-file=configmap.env"]
             ["build"]
 
       - uses: dimw/mockbin-action@v1
