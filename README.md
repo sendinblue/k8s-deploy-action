@@ -35,6 +35,10 @@ Literal secrets to set.
 
 [Strategy](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#apply) passed to `kubectl apply`. Must be `none`, `server`, or `client`. Default: `none`. 
 
+### `kubectl-params`
+
+Additional parameters to pass to `kubectl apply`.
+
 ## Outputs
 
 None.
