@@ -4,6 +4,9 @@ inputs:
   resource-directory:
     description: 'Location of the Kubernetes deployment resources'
     required: true
+  kube-config-data:
+    description: 'Content of the .kube/config file'
+    required: false
   images:
     description: 'Images to deploy'
     required: false
@@ -25,11 +28,13 @@ runs:
   using: 'composite'
   steps:
     - name: Configure image, secrets, and deploy image
+      id: main
       env:
         IMAGES: ${{ inputs.images }}
         SECRETS_NAME: ${{ inputs.secrets-name }}
         SECRETS: ${{ inputs.secrets }}
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
+        KUBE_CONFIG_DATA: ${{ inputs.kube-config-data }}
         DRY_RUN: ${{ inputs.dry-run }}
       working-directory: ${{ inputs.resource-directory }}
       run: |
@@ -53,6 +58,25 @@ runs:
           done <<< "$SECRETS_FROM_FILES"
         fi
 
+        if [[ -n "$KUBE_CONFIG_DATA" ]]; then
+          RANDOM_HASH=$(date +"%s%N")
+          KUBECTL_KUBECONFIG="${{ github.workspace }}/.k8s-deploy-action-kube-config-${RANDOM_HASH}.yml"
+          echo "$KUBE_CONFIG_DATA" > "$KUBECTL_KUBECONFIG"
+          echo "::set-output name=kubectl-kubeconfig::$KUBECTL_KUBECONFIG"
+        fi
+
         echo "Applying kubectl (dry-run=$DRY_RUN)."
-        kustomize build | kubectl apply --dry-run="$DRY_RUN" --filename -
+        kustomize build | kubectl apply \
+          --kubeconfig="$KUBECTL_KUBECONFIG" \
+          --dry-run="$DRY_RUN" \
+          --filename -
+      shell: bash
+
+    - name: Cleanup
+      env:
+        KUBECTL_KUBECONFIG: ${{ steps.main.outputs.kubectl-kubeconfig }}
+      run: |
+        if [[ -f "$KUBECTL_KUBECONFIG" ]]; then
+          rm "$KUBECTL_KUBECONFIG"
+        fi
       shell: bash

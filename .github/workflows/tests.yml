@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -20,17 +20,17 @@ jobs:
           resource-directory: './'
           images: my-image
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
             ["edit", "set", "image", "my-image"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets:
     name: Should set secrets
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -58,17 +58,17 @@ jobs:
             exit 1
           fi
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
             ["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-set-secrets-from-file:
     name: Should set secrets from files
@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -97,7 +97,7 @@ jobs:
             fooSecret=foo.secret
             barSecret=bar.secret
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
@@ -105,10 +105,10 @@ jobs:
             ["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=none", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
   should-dry-run-server:
     name: Should dry-run on server
@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -128,7 +128,32 @@ jobs:
           resource-directory: './'
           dry-run: server
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
-          assert-args: '["apply", "--dry-run=server", "--filename", "-"]'
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=server", "--filename", "-"]'
+
+  should-use-kube-config-data:
+    name: Should use custom .kube/config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          kube-config-data: |-
+            foo: bar
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kubectl
+          assert-args: |
+            ["apply", "--kubeconfig=${{ github.workspace }}/.k8s-deploy-action-kube-config-[a-z0-9]+.yml", "--dry-run=none", "--filename", "-"]

@@ -11,6 +11,10 @@ This action performs generation of Kubernetes (K8s) resources from
 
 **Required** Location of the Kubernetes deployment resources.
 
+### `kube-config-data`
+
+Content of .kube/config file for K8s authentication. Default: system default.
+
 ### `images`
 
 Images to deploy, e.g. `foo/example-app:latest` (see [other formats](https://github.com/kubernetes-sigs/kustomize/blob/master/examples/image.md)).
