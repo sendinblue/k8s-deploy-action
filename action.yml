@@ -59,7 +59,7 @@ runs:
 
         if [[ -n "$KUBE_CONFIG_DATA" ]]; then
           echo "$KUBE_CONFIG_DATA" > ${{ github.workspace }}/kube-config.yml
-          KUBECTL_KUBECONFIG="--kubeconfig \"${{ github.workspace }}/kube-config.yml\"
+          KUBECTL_KUBECONFIG="--kubeconfig \"${{ github.workspace }}/kube-config.yml\""
         fi
 
         echo "Applying kubectl (dry-run=$DRY_RUN)."
