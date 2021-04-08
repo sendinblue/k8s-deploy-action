@@ -149,8 +149,16 @@ jobs:
         uses: './'
         with:
           resource-directory: './'
-          kube-config-data: |
+          kube-config-data: |-
             foo: bar
+
+      - name: Check kubeconfig file content
+        run: |
+          KUBE_CONFIG_DATA=$(cat "${{ github.workspace }}/kube-config.yml")
+          if [[ "$KUBE_CONFIG_DATA" != "foo: bar" ]]; then
+            echo "The kube-config.yml was not created properly!"
+            exit 1
+          fi
 
       - uses: 'dimw/mockbin-action@main'
         with:
