@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -20,14 +20,14 @@ jobs:
           resource-directory: './'
           images: my-image
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
             ["edit", "set", "image", "my-image"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -58,14 +58,14 @@ jobs:
             exit 1
           fi
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
             ["edit", "add", "secret", "my-secrets", "--from-env-file=secrets.env"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -97,7 +97,7 @@ jobs:
             fooSecret=foo.secret
             barSecret=bar.secret
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kustomize
           assert-args: |
@@ -105,7 +105,7 @@ jobs:
             ["edit", "add", "secret", "my-secrets", "--from-file=barSecret=bar.secret"]
             ["build"]
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -128,7 +128,7 @@ jobs:
           resource-directory: './'
           dry-run: server
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=server", "--filename", "-"]'
@@ -139,7 +139,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: |
             kubectl
@@ -160,7 +160,7 @@ jobs:
             exit 1
           fi
 
-      - uses: 'dimw/mockbin-action@main'
+      - uses: dimw/mockbin-action@v1
         with:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=${{ github.workspace }}/kube-config.yml", "--dry-run=none", "--filename", "-"]'
