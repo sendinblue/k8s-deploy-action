@@ -157,3 +157,27 @@ jobs:
           commands: kubectl
           assert-args: |
             ["apply", "--kubeconfig=${{ github.workspace }}/.k8s-deploy-action-kube-config-[a-z0-9]+.yml", "--dry-run=none", "--filename", "-"]
+
+  should-call-kubectl-apply-with-params:
+    name: Should call kubectl apply with additional parameters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          kubectl-params: '--foo=bar'
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kubectl
+          assert-args: |
+            ["apply", "--foo=bar", "--kubeconfig=", "--dry-run=none", "--filename", "-"]
