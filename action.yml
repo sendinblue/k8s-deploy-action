@@ -62,7 +62,7 @@ runs:
           RANDOM_HASH=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
           KUBECTL_KUBECONFIG="${{ github.workspace }}/.k8s-deploy-action-kube-config-${RANDOM_HASH}.yml"
           echo "$KUBE_CONFIG_DATA" > "$KUBECTL_KUBECONFIG"
-          echo "::set-output name=kubectl-kubeconfig::${KUBECTL_KUBECONFIG}"
+          echo "::set-output name=kubectl-kubeconfig::$KUBECTL_KUBECONFIG"
         fi
 
         echo "Applying kubectl (dry-run=$DRY_RUN)."
@@ -73,8 +73,10 @@ runs:
       shell: bash
 
     - name: Cleanup
+      env:
+        KUBECTL_KUBECONFIG: ${{ steps.main.outputs.kubectl-kubeconfig }}
       run: |
-        if [ -f "${{ steps.main.outputs.kubectl-kubeconfig }}"]; then
-          rm "${{ steps.main.outputs.kubectl-kubeconfig }}"
+        if [[ -f "$KUBECTL_KUBECONFIG" ]]; then
+          rm "$KUBECTL_KUBECONFIG"
         fi
       shell: bash
