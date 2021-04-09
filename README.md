@@ -60,7 +60,7 @@ None.
   run: echo "$FOO_PRIVATE_KEY" > ./fooPrivateKey.secret
 
 - name: Configure and deploy
-  uses: 'sendinblue/k8s-deploy-action@main'
+  uses: 'sendinblue/k8s-deploy-action@v1'
   with:
     resource-directory: ./deployment
     image: foo/example-app:1.0.0
