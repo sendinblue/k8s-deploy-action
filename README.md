@@ -40,6 +40,10 @@ Name of the configmap. Default: `configmap`.
 
 Literals of configmap to set.
 
+### `configmap-from-files`
+
+Configmap from files or folder to set (e.g. for using in volumes)
+
 ### `dry-run`
 
 [Strategy](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#apply) passed to `kubectl apply`. Must be `none`, `server`, or `client`. Default: `none`. 
@@ -73,6 +77,8 @@ None.
     configmap: |-
       labels=production
       auto-scaling=true
+    configmap-from-files: |
+      fooConfig=foo.config
 ```
 
 [Kustomize]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
