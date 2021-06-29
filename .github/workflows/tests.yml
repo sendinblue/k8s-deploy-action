@@ -148,6 +148,46 @@ jobs:
           commands: kubectl
           assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
 
+  should-set-configmap-from-files:
+    name: Should set configmap from files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: |
+            kubectl
+            kustomize
+
+      - name: Prepare config files
+        working-directory: ./
+        run: |
+          touch ./foo.config
+          touch ./bar.config
+
+      - name: Act
+        uses: './'
+        with:
+          resource-directory: './'
+          configmap-name: my-configmap
+          configmap-from-files: |
+            fooConfig=foo.config
+            barConfig=bar.config
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kustomize
+          assert-args: |
+            ["edit", "add", "configmap", "my-configmap", "--from-file=fooConfig=foo.config"]
+            ["edit", "add", "configmap", "my-configmap", "--from-file=barConfig=bar.config"]
+            ["build"]
+
+      - uses: dimw/mockbin-action@v1
+        with:
+          commands: kubectl
+          assert-args: '["apply", "--kubeconfig=", "--dry-run=none", "--filename", "-"]'
+
   should-dry-run-server:
     name: Should dry-run on server
     runs-on: ubuntu-latest

@@ -28,6 +28,9 @@ inputs:
   configmap:
     description: 'Literals of configmap to set'
     required: false
+  configmap-from-files:
+    description: 'Configmap from files or folder to set (e.g. for volume mapping)'
+    required: false
   dry-run:
     description: 'Strategy passed to kubectl apply. Must be "none", "server", or "client".'
     default: 'none'
@@ -48,6 +51,7 @@ runs:
         SECRETS_FROM_FILES: ${{ inputs.secrets-from-files }}
         CONFIGMAP_NAME: ${{ inputs.configmap-name }}
         CONFIGMAP: ${{ inputs.configmap }}
+        CONFIGMAP_FROM_FILES: ${{ inputs.configmap-from-files }}
         KUBE_CONFIG_DATA: ${{ inputs.kube-config-data }}
         DRY_RUN: ${{ inputs.dry-run }}
       working-directory: ${{ inputs.resource-directory }}
@@ -76,6 +80,15 @@ runs:
           echo "Adding literals to configmap: $CONFIGMAP_NAME"
           echo "$CONFIGMAP" > configmap.env
           kustomize edit add configmap $CONFIGMAP_NAME --from-env-file=configmap.env
+        fi
+
+        if [[ -n "$CONFIGMAP_FROM_FILES" ]]; then
+          while IFS= read -r line; do
+              if [[ -n "$line" ]]; then
+                echo "Adding configmap from file: ${line}"
+                kustomize edit add configmap $CONFIGMAP_NAME --from-file=${line}
+              fi
+          done <<< "$CONFIGMAP_FROM_FILES"
         fi
 
         if [[ -n "$KUBE_CONFIG_DATA" ]]; then
