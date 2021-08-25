@@ -48,6 +48,10 @@ Configmap from files or folder to set (e.g. for using in volumes)
 
 [Strategy](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#apply) passed to `kubectl apply`. Must be `none`, `server`, or `client`. Default: `none`. 
 
+### `show-differences`
+
+Prints the differences between the current "live" object using `kubcetl diff`
+
 ### `kubectl-params`
 
 Additional parameters to pass to `kubectl apply`.

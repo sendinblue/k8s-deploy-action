@@ -39,6 +39,10 @@ inputs:
     description: 'Additional parameters to pass to "kubectl apply"'
     default: ''
     required: false
+  show-differences:
+    description: 'Differences between the current "live" object using "kubcetl diff"'
+    default: ''
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -54,6 +58,7 @@ runs:
         CONFIGMAP_FROM_FILES: ${{ inputs.configmap-from-files }}
         KUBE_CONFIG_DATA: ${{ inputs.kube-config-data }}
         DRY_RUN: ${{ inputs.dry-run }}
+        SHOW_DIFFERENCES: ${{ inputs.show-differences }}
       working-directory: ${{ inputs.resource-directory }}
       run: |
         if [[ -n "$IMAGES" ]]; then
@@ -96,6 +101,14 @@ runs:
           KUBECTL_KUBECONFIG="${{ github.workspace }}/.k8s-deploy-action-kube-config-${RANDOM_HASH}.yml"
           echo "$KUBE_CONFIG_DATA" > "$KUBECTL_KUBECONFIG"
           echo "::set-output name=kubectl-kubeconfig::$KUBECTL_KUBECONFIG"
+        fi
+
+        if [[ -n "$SHOW_DIFFERENCES" ]]; then
+          echo "Running kubectl diff"
+          kustomize build | kubectl diff \
+          --kubeconfig="$KUBECTL_KUBECONFIG" \
+          --filename -
+          exit 0
         fi
 
         echo "Applying kubectl (dry-run=$DRY_RUN)."
