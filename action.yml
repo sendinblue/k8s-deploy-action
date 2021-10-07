@@ -106,8 +106,9 @@ runs:
         if [[ -n "$SHOW_DIFFERENCES" ]]; then
           echo "Running kubectl diff"
           kustomize build | kubectl diff \
-          --kubeconfig="$KUBECTL_KUBECONFIG" \
-          --filename -
+            ${{ inputs.kubectl-params }} \
+            --kubeconfig="$KUBECTL_KUBECONFIG" \
+            --filename -
           exit 0
         fi
 
